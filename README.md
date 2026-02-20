@@ -25,6 +25,7 @@ Professional resume builder with a human-centered interface, live preview, AI as
 - Optional profile photo with crop modal and OK/Cancel flow
 - AI tools:
   improve About, rewrite experience, generate bullets, grammar improve
+- Import existing resume from PDF/PPTX and auto-fill sections
 - Typed skill suggestions in Skills section as user enters keywords
 - Drag-and-drop section ordering
 - Auto-save + restore via LocalStorage and IndexedDB

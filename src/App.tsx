@@ -20,6 +20,7 @@ import { ResumeData, ResumeFontId, ResumeFontSizeId, TemplateId } from "./types/
 import { CertificationsSection } from "./components/form/CertificationsSection";
 import { EducationSection } from "./components/form/EducationSection";
 import { ExperienceSection } from "./components/form/ExperienceSection";
+import { ImportSection } from "./components/form/ImportSection";
 import { PersonalSection } from "./components/form/PersonalSection";
 import { ProjectsSection } from "./components/form/ProjectsSection";
 import { SkillsSection } from "./components/form/SkillsSection";
@@ -179,6 +180,9 @@ const App = () => {
   const [templateCategory, setTemplateCategory] = useState<string>(templateCategoryById[template]);
   const [fontCategory, setFontCategory] = useState<string>(fontCategoryById[font]);
   const [fontSizeCategory, setFontSizeCategory] = useState<string>(fontSizeCategoryById[fontSize]);
+  const [importLoading, setImportLoading] = useState(false);
+  const [importStatusMessage, setImportStatusMessage] = useState("");
+  const [importErrorMessage, setImportErrorMessage] = useState("");
 
   const selectedTemplateOptions = useMemo(
     () =>
@@ -330,6 +334,27 @@ const App = () => {
       fontSizeCatalog.find((group) => group.category === nextCategory)?.items || allFontSizes;
     if (!nextItems.some((item) => item.id === fontSize)) {
       setFontSize(nextItems[0].id);
+    }
+  };
+
+  const handleImportFile = async (file: File) => {
+    setImportLoading(true);
+    setImportStatusMessage("");
+    setImportErrorMessage("");
+
+    try {
+      const { importResumeFromFile } = await import("./lib/importResume");
+      const nextResume = await importResumeFromFile(file, form.getValues());
+      form.reset(nextResume);
+      setResume(nextResume);
+      setAi({ error: undefined, scoreSource: null });
+      setImportStatusMessage(`Imported data from ${file.name}. Please review and edit where needed.`);
+    } catch (error) {
+      setImportErrorMessage(
+        error instanceof Error ? error.message : "Import failed. Please try another file."
+      );
+    } finally {
+      setImportLoading(false);
     }
   };
 
@@ -549,6 +574,14 @@ const App = () => {
             Editor Panel
           </p>
           <form className="space-y-6" onSubmit={(event) => event.preventDefault()}>
+            <ImportSection
+              loading={importLoading}
+              statusMessage={importStatusMessage}
+              errorMessage={importErrorMessage}
+              onFileSelect={(file) => {
+                void handleImportFile(file);
+              }}
+            />
             <PersonalSection form={form} onImproveSummary={handleImproveSummary} loading={ai.loading} />
             <EducationSection form={form} onAdd={addEducation} onRemove={removeEducation} />
             <ExperienceSection
