@@ -28,6 +28,7 @@ import { SectionOrder } from "./components/SectionOrder";
 
 const ResumePreview = lazy(() => import("./components/preview/ResumePreview"));
 const AiPanel = lazy(() => import("./components/ai/AiPanel"));
+const ApiKeyPanel = lazy(() => import("./components/ai/ApiKeyPanel"));
 
 type TemplateItem = { id: TemplateId; label: string };
 type FontItem = { id: ResumeFontId; label: string };
@@ -640,6 +641,16 @@ const App = () => {
           </div>
 
           <SectionOrder order={sectionOrder} onReorder={setSectionOrder} />
+
+          <Suspense fallback={<div className="text-sm text-slate-400">Loading AI settings...</div>}>
+            <ApiKeyPanel />
+          </Suspense>
+
+          {ai.error ? (
+            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs text-rose-700 dark:border-rose-500/40 dark:bg-rose-500/10 dark:text-rose-300">
+              {ai.error}
+            </div>
+          ) : null}
 
           <Suspense fallback={<div className="text-sm text-slate-400">Loading ATS score...</div>}>
             <AiPanel />
