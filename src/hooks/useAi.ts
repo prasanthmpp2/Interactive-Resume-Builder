@@ -7,7 +7,14 @@ import { useResumeStore } from "../store/resumeStore";
 const listify = (text: string) =>
   text
     .split("\n")
-    .map((line) => line.replace(/^[\-\d\.\)]\s*/, "").trim())
+    .map((line) => line.replace(/^\s*(?:[-*]|\d+[.)])\s*/, "").trim())
+    .filter(Boolean);
+
+const normalizeSkillTokens = (text: string) =>
+  text
+    .split(/\n|,/g)
+    .map((token) => token.replace(/^\s*(?:[-*]|\d+[.)])\s*/, "").trim())
+    .map((token) => token.replace(/\.$/, ""))
     .filter(Boolean);
 
 const extractScore = (text: string) => {
@@ -45,9 +52,9 @@ export const useAiActions = () => {
 
   const improveSummary = useCallback(
     async (summary: string) => {
-      const prompt = `Improve this resume summary to be concise and impact-focused.
-Return 2-3 sentences, max 70 words, no bullet points.\n${summary}`;
-      return runAction("Improve Summary", prompt);
+      const prompt = `Improve this resume About section to be concise and impact-focused.
+Return 3-4 sentences, max 120 words, no bullet points.\n${summary}`;
+      return runAction("Improve About", prompt);
     },
     [runAction]
   );
@@ -87,6 +94,30 @@ Return 2-3 sentences, max 70 words, no bullet points.\n${summary}`;
     [runAction]
   );
 
+  const suggestSkills = useCallback(
+    async (resume: ResumeData) => {
+      const prompt = `Suggest 12 resume skills tailored to this candidate.
+Return only skill names, one per line, no numbering.
+Keep each item concise and ATS friendly.
+Resume data:
+${JSON.stringify(resume)}`;
+      const output = await runAction("AI Skill Suggestions", prompt);
+      if (!output) return null;
+
+      const existing = new Set(resume.skills.map((skill) => skill.toLowerCase()));
+      const unique: string[] = [];
+      for (const token of normalizeSkillTokens(output)) {
+        const normalized = token.toLowerCase();
+        if (normalized.length > 40) continue;
+        if (existing.has(normalized)) continue;
+        if (unique.some((item) => item.toLowerCase() === normalized)) continue;
+        unique.push(token);
+      }
+      return unique.slice(0, 12);
+    },
+    [runAction]
+  );
+
   const analyzeStrength = useCallback(
     async (resume: ResumeData) => {
       const prompt = `Rate this resume from 0 to 100 for strength and ATS readiness. Reply with only a number.\n${JSON.stringify(
@@ -109,6 +140,7 @@ Return 2-3 sentences, max 70 words, no bullet points.\n${summary}`;
     generateBullets,
     atsSuggestions,
     grammarImprove,
+    suggestSkills,
     analyzeStrength
   };
 };

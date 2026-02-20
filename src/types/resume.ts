@@ -5,6 +5,7 @@ export type PersonalDetails = {
   address: string;
   linkedin: string;
   github: string;
+  photo: string;
   summary: string;
 };
 
@@ -69,6 +70,21 @@ export type TemplateId =
   | "sand"
   | "ocean"
   | "forest";
+
+export type ResumeFontId =
+  | "inter"
+  | "poppins"
+  | "lato"
+  | "manrope"
+  | "montserrat"
+  | "nunito"
+  | "merriweather"
+  | "playfair"
+  | "robotoSlab"
+  | "sourceSerif"
+  | "spaceGrotesk";
+
+export type ResumeFontSizeId = "xsmall" | "small" | "default" | "large" | "xlarge";
 
 export type SectionKey =
   | "summary"

@@ -8,8 +8,9 @@ export const sampleResume: ResumeData = {
     address: "San Francisco, CA",
     linkedin: "linkedin.com/in/aaravmehta",
     github: "github.com/aaravmehta",
+    photo: "",
     summary:
-      "Product-focused Frontend Engineer with 6+ years building SaaS platforms. Shipped 15+ releases that lifted activation by 22% and reduced support tickets by 30%. Skilled in React, TypeScript, and performance optimization, aiming to scale reliable user experiences."
+      "Results-driven Software Engineer with 7+ years delivering scalable web applications across product, platform, and analytics teams. Led cross-functional initiatives that improved feature adoption by 28%, reduced page load times by 42%, and lowered production incidents through stronger testing and observability. Experienced in React, TypeScript, Node.js, cloud services, and team mentoring. Known for converting business goals into reliable, user-focused solutions with measurable outcomes at scale."
   },
   education: [
     {

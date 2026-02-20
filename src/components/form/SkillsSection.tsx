@@ -17,7 +17,9 @@ export const SkillsSection = ({ form }: SkillsSectionProps) => {
     if (!input) return [];
     const query = input.toLowerCase();
     return SKILL_SUGGESTIONS.filter(
-      (skill) => skill.toLowerCase().includes(query) && !skills.includes(skill)
+      (skill) =>
+        skill.toLowerCase().includes(query) &&
+        !skills.some((current) => current.toLowerCase() === skill.toLowerCase())
     ).slice(0, 6);
   }, [input, skills]);
 

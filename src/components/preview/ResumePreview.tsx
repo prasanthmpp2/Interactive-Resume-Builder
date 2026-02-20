@@ -1,11 +1,13 @@
 import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ResumeData, SectionKey, TemplateId } from "../../types/resume";
+import { ResumeData, ResumeFontId, ResumeFontSizeId, SectionKey, TemplateId } from "../../types/resume";
 
 type ResumePreviewProps = {
   resume: ResumeData;
   template: TemplateId;
   order: SectionKey[];
+  font: ResumeFontId;
+  fontSize: ResumeFontSizeId;
 };
 
 const templateStyles: Record<
@@ -34,9 +36,9 @@ const templateStyles: Record<
     skillChip: "bg-slate-900 text-white"
   },
   minimal: {
-    page: "bg-white text-slate-900 font-serif",
+    page: "bg-white text-slate-900",
     header: "border-b border-slate-300 pb-4",
-    sectionTitle: "text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 font-sans",
+    sectionTitle: "text-xs font-semibold uppercase tracking-[0.2em] text-slate-500",
     sectionWrap: "",
     skillChip: "border border-slate-400 text-slate-700"
   },
@@ -83,9 +85,9 @@ const templateStyles: Record<
     skillChip: "bg-slate-700 text-white"
   },
   serif: {
-    page: "bg-white text-slate-900 font-serif",
+    page: "bg-white text-slate-900",
     header: "border-b border-slate-400 pb-4",
-    sectionTitle: "text-xs font-semibold uppercase tracking-[0.25em] text-slate-500 font-sans",
+    sectionTitle: "text-xs font-semibold uppercase tracking-[0.25em] text-slate-500",
     sectionWrap: "",
     skillChip: "border border-slate-400 text-slate-700"
   },
@@ -111,7 +113,7 @@ const templateStyles: Record<
     skillChip: "bg-blue-600 text-white"
   },
   mono: {
-    page: "bg-white text-slate-900 font-mono",
+    page: "bg-white text-slate-900",
     header: "border-b border-slate-300 pb-4",
     sectionTitle: "text-xs font-semibold uppercase tracking-[0.25em] text-slate-500",
     sectionWrap: "",
@@ -199,19 +201,57 @@ const contactLine = (resume: ResumeData) => {
     resume.personal.linkedin,
     resume.personal.github
   ].filter((item) => isFilled(item));
-  return parts.join(" · ");
+  return parts.join(" | ");
 };
 
 const hasAny = (items: Array<Record<string, string>>) =>
   items.some((item) => Object.values(item).some((value) => isFilled(value)));
 
-const ResumePreview = ({ resume, template, order }: ResumePreviewProps) => {
+const darkHeaderTemplates: TemplateId[] = [
+  "modern",
+  "slate",
+  "indigo",
+  "rose",
+  "executive",
+  "aurora",
+  "cobalt",
+  "contrast",
+  "skyline",
+  "ocean",
+  "forest"
+];
+
+const fontClassMap: Record<ResumeFontId, string> = {
+  inter: "resume-font-inter",
+  poppins: "resume-font-poppins",
+  lato: "resume-font-lato",
+  manrope: "resume-font-manrope",
+  montserrat: "resume-font-montserrat",
+  nunito: "resume-font-nunito",
+  merriweather: "resume-font-merriweather",
+  playfair: "resume-font-playfair",
+  robotoSlab: "resume-font-roboto-slab",
+  sourceSerif: "resume-font-source-serif",
+  spaceGrotesk: "resume-font-space-grotesk"
+};
+
+const fontSizeClassMap: Record<ResumeFontSizeId, string> = {
+  xsmall: "resume-size-xsmall",
+  small: "resume-size-small",
+  default: "resume-size-default",
+  large: "resume-size-large",
+  xlarge: "resume-size-xlarge"
+};
+
+const ResumePreview = ({ resume, template, order, font, fontSize }: ResumePreviewProps) => {
   const styles = templateStyles[template];
+  const hasDarkHeader = darkHeaderTemplates.includes(template);
+  const hasPhoto = isFilled(resume.personal.photo);
 
   const sections: Record<SectionKey, ReactNode | null> = {
     summary: isFilled(resume.personal.summary) ? (
       <div>
-        <h3 className={styles.sectionTitle}>Summary</h3>
+        <h3 className={styles.sectionTitle}>About</h3>
         <p className="mt-2 text-sm leading-relaxed text-slate-600">{resume.personal.summary}</p>
       </div>
     ) : null,
@@ -230,7 +270,7 @@ const ResumePreview = ({ resume, template, order }: ResumePreviewProps) => {
                 {(item.institution || item.score) && (
                   <p className="text-sm text-slate-600">
                     {item.institution}
-                    {item.institution && item.score ? ` · ${item.score}` : item.score || ""}
+                    {item.institution && item.score ? ` | ${item.score}` : item.score || ""}
                   </p>
                 )}
               </div>
@@ -252,7 +292,7 @@ const ResumePreview = ({ resume, template, order }: ResumePreviewProps) => {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   {(item.role || item.company) ? (
                     <p className="text-sm font-semibold text-slate-800">
-                      {[item.role, item.company].filter(Boolean).join(" · ")}
+                      {[item.role, item.company].filter(Boolean).join(" | ")}
                     </p>
                   ) : null}
                   {item.duration ? <span className="text-xs text-slate-500">{item.duration}</span> : null}
@@ -319,7 +359,8 @@ const ResumePreview = ({ resume, template, order }: ResumePreviewProps) => {
     ) : null
   };
 
-  const showHeader = isFilled(resume.personal.name) || isFilled(contactLine(resume));
+  const showHeader =
+    isFilled(resume.personal.name) || isFilled(contactLine(resume)) || isFilled(resume.personal.photo);
 
   return (
     <AnimatePresence mode="wait">
@@ -329,16 +370,27 @@ const ResumePreview = ({ resume, template, order }: ResumePreviewProps) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.2 }}
-        className={`min-h-[900px] w-full rounded-3xl px-8 py-6 shadow-2xl ${styles.page}`}
+        className={`min-h-[900px] w-full rounded-3xl px-8 py-6 shadow-2xl ${styles.page} ${fontClassMap[font]} ${fontSizeClassMap[fontSize]}`}
         id="resume-preview-surface"
       >
         {showHeader ? (
-          <header className={styles.header}>
-            {resume.personal.name ? <h2 className="text-2xl font-semibold">{resume.personal.name}</h2> : null}
-            {contactLine(resume) ? (
-              <p className={`mt-1 text-sm ${template === "modern" ? "text-white/80" : "text-slate-500"}`}>
-                {contactLine(resume)}
-              </p>
+          <header className={`${styles.header} flex items-start justify-between gap-4`}>
+            <div className="min-w-0 flex-1">
+              {resume.personal.name ? <h2 className="text-2xl font-semibold">{resume.personal.name}</h2> : null}
+              {contactLine(resume) ? (
+                <p className={`mt-1 text-sm ${hasDarkHeader ? "text-white/80" : "text-slate-500"}`}>
+                  {contactLine(resume)}
+                </p>
+              ) : null}
+            </div>
+            {hasPhoto ? (
+              <img
+                src={resume.personal.photo}
+                alt={resume.personal.name ? `${resume.personal.name} profile photo` : "Profile photo"}
+                className={`h-20 w-20 shrink-0 rounded-2xl border object-cover ${
+                  hasDarkHeader ? "border-white/30 bg-white/10" : "border-slate-200 bg-white"
+                }`}
+              />
             ) : null}
           </header>
         ) : null}
@@ -353,3 +405,4 @@ const ResumePreview = ({ resume, template, order }: ResumePreviewProps) => {
 };
 
 export default ResumePreview;
+

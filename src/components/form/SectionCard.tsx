@@ -13,7 +13,7 @@ export const SectionCard = ({ title, description, children, defaultOpen = true }
   <Disclosure defaultOpen={defaultOpen}>
     {({ open }) => (
       <div className="glass-card">
-        <Disclosure.Button className="flex w-full items-center justify-between gap-4 rounded-2xl border border-white/10 px-4 py-3 text-left dark:border-slate-700/60">
+        <Disclosure.Button className="flex w-full items-center justify-between gap-4 rounded-2xl border border-white/10 px-5 py-3 text-left transition hover:bg-white/30 dark:border-slate-700/60 dark:hover:bg-slate-800/30">
           <div>
             <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
             {description ? (
@@ -22,7 +22,7 @@ export const SectionCard = ({ title, description, children, defaultOpen = true }
           </div>
           <ChevronDown className={`h-5 w-5 text-slate-500 transition ${open ? "rotate-180" : ""}`} />
         </Disclosure.Button>
-        <Disclosure.Panel className="space-y-4 px-4 pb-4 pt-2">{children}</Disclosure.Panel>
+        <Disclosure.Panel className="space-y-4 px-5 pb-5 pt-3">{children}</Disclosure.Panel>
       </div>
     )}
   </Disclosure>

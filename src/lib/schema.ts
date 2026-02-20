@@ -9,7 +9,8 @@ const personalSchema = z.object({
   address: optionalString(120),
   linkedin: optionalString(120),
   github: optionalString(120),
-  summary: optionalString(280)
+  photo: optionalString(500000),
+  summary: optionalString(500)
 });
 
 const educationSchema = z.object({

@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import { defaultResume, defaultSectionOrder } from "../lib/resume";
-import { ResumeData, SectionKey, TemplateId } from "../types/resume";
+import {
+  ResumeData,
+  ResumeFontId,
+  ResumeFontSizeId,
+  SectionKey,
+  TemplateId
+} from "../types/resume";
 
 type AiState = {
   loading: boolean;
@@ -15,10 +21,14 @@ type AiState = {
 type ResumeStore = {
   resume: ResumeData;
   template: TemplateId;
+  font: ResumeFontId;
+  fontSize: ResumeFontSizeId;
   sectionOrder: SectionKey[];
   ai: AiState;
   setResume: (resume: ResumeData) => void;
   setTemplate: (template: TemplateId) => void;
+  setFont: (font: ResumeFontId) => void;
+  setFontSize: (fontSize: ResumeFontSizeId) => void;
   setSectionOrder: (order: SectionKey[]) => void;
   setAi: (partial: Partial<AiState>) => void;
   setAiLoading: (loading: boolean, action?: string) => void;
@@ -27,6 +37,8 @@ type ResumeStore = {
 export const useResumeStore = create<ResumeStore>((set) => ({
   resume: defaultResume,
   template: "classic",
+  font: "inter",
+  fontSize: "default",
   sectionOrder: defaultSectionOrder,
   ai: {
     loading: false,
@@ -36,6 +48,8 @@ export const useResumeStore = create<ResumeStore>((set) => ({
   },
   setResume: (resume) => set({ resume }),
   setTemplate: (template) => set({ template }),
+  setFont: (font) => set({ font }),
+  setFontSize: (fontSize) => set({ fontSize }),
   setSectionOrder: (sectionOrder) => set({ sectionOrder }),
   setAi: (partial) => set((state) => ({ ai: { ...state.ai, ...partial } })),
   setAiLoading: (loading, action) => set((state) => ({ ai: { ...state.ai, loading, action } }))

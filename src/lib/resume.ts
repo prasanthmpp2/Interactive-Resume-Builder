@@ -35,6 +35,7 @@ export const defaultResume: ResumeData = {
     address: "",
     linkedin: "",
     github: "",
+    photo: "",
     summary: ""
   },
   education: [emptyEducation()],
@@ -45,7 +46,7 @@ export const defaultResume: ResumeData = {
 };
 
 export const sectionLabels: Record<SectionKey, string> = {
-  summary: "Summary",
+  summary: "About",
   education: "Education",
   experience: "Experience",
   projects: "Projects",
@@ -96,7 +97,7 @@ export const computeHeuristicScore = (resume: ResumeData) => {
 export const computeAtsSuggestions = (resume: ResumeData) => {
   const suggestions: string[] = [];
   if (!resume.personal.summary.trim()) {
-    suggestions.push("Add a concise professional summary with key strengths and outcomes.");
+    suggestions.push("Add a concise About section with key strengths and outcomes.");
   }
   if (!resume.education.some((item) => item.degree.trim() && item.institution.trim())) {
     suggestions.push("Include at least one education entry with degree and institution.");
