@@ -520,6 +520,12 @@ const extractPptxText = async (file: File) => {
   return slideText.join("\n");
 };
 
+const extractImageText = async (file: File) => {
+  const { recognize } = await import("tesseract.js");
+  const { data } = await recognize(file, "eng");
+  return data?.text ?? "";
+};
+
 export const importResumeFromFile = async (file: File, current: ResumeData): Promise<ResumeData> => {
   const filename = file.name.toLowerCase();
   const isPdf = filename.endsWith(".pdf") || file.type === "application/pdf";
@@ -528,14 +534,20 @@ export const importResumeFromFile = async (file: File, current: ResumeData): Pro
     file.type ===
       "application/vnd.openxmlformats-officedocument.presentationml.presentation";
   const isPpt = filename.endsWith(".ppt") || file.type === "application/vnd.ms-powerpoint";
+  const isJpg =
+    filename.endsWith(".jpg") || filename.endsWith(".jpeg") || file.type === "image/jpeg";
+  const isPng = filename.endsWith(".png") || file.type === "image/png";
+  const isImage = isJpg || isPng;
 
-  if (!isPdf && !isPptx && !isPpt) {
-    throw new Error("Unsupported format. Please upload a PDF or PowerPoint file.");
+  if (!isPdf && !isPptx && !isPpt && !isImage) {
+    throw new Error("Unsupported format. Please upload PDF, PPTX, JPG, or PNG.");
   }
 
   let text = "";
   if (isPdf) {
     text = await extractPdfText(file);
+  } else if (isImage) {
+    text = await extractImageText(file);
   } else {
     try {
       text = await extractPptxText(file);

@@ -24,7 +24,7 @@ export const ImportSection = ({
 
   return (
     <SectionCard
-      title="Import from PDF/PPT"
+      title="Import from PDF/PPT/Image"
       description="Upload a resume file and auto-fill the sections."
       defaultOpen
     >
@@ -35,13 +35,13 @@ export const ImportSection = ({
         </div>
         <input
           type="file"
-          accept=".pdf,.ppt,.pptx,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+          accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,image/jpeg,image/png"
           onChange={handleChange}
           disabled={loading}
           className="mt-3 block w-full text-sm text-slate-600 file:mr-3 file:rounded-full file:border-0 file:bg-slate-900 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-300 dark:file:bg-white dark:file:text-slate-900 dark:hover:file:bg-slate-200"
         />
         <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-          Supported: PDF and PPTX. Older PPT files should be converted to PPTX first.
+          Supported: PDF, PPTX, JPG, PNG. Older PPT files should be converted to PPTX first.
         </p>
         {loading ? <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">Importing...</p> : null}
         {statusMessage ? (
